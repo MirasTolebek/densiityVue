@@ -7,106 +7,108 @@
     <!-- Подключение Tailwind CSS для современного дизайна -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Пользовательские стили для шрифта Inter */
+        /* Определяем CSS-переменные для темы Telegram на корневом уровне */
+        :root {
+            --tg-theme-bg-color: #f0f2f5; /* Светло-серый фон по умолчанию */
+            --tg-theme-text-color: #333; /* Темный текст по умолчанию */
+            --tg-theme-hint-color: #6b7280; /* Серый текст подсказок по умолчанию */
+            --tg-theme-link-color: #3b82f6; /* Синяя ссылка по умолчанию */
+            --tg-theme-button-color: #6366f1; /* Индиго кнопка по умолчанию */
+            --tg-theme-button-text-color: #ffffff; /* Белый текст кнопки по умолчанию */
+            --tg-theme-secondary-bg-color: #ffffff; /* Вторичный фон (для карточек) по умолчанию */
+        }
+
+        /* Применяем основные цвета темы к body */
         body {
             font-family: 'Inter', sans-serif;
-            /* Устанавливаем CSS-переменные для темы Telegram по умолчанию */
-            --tg-theme-bg-color: #f0f2f5; /* Светло-серый фон */
-            --tg-theme-text-color: #333; /* Темный текст */
-            --tg-theme-hint-color: #6b7280; /* Серый текст подсказок */
-            --tg-theme-link-color: #3b82f6; /* Синяя ссылка */
-            --tg-theme-button-color: #6366f1; /* Индиго кнопка */
-            --tg-theme-button-text-color: #ffffff; /* Белый текст кнопки */
-
             background-color: var(--tg-theme-bg-color);
             color: var(--tg-theme-text-color);
         }
+
         /* Стили для фокуса на полях ввода */
         input:focus, button:focus {
             outline: none;
             box-shadow: 0 0 0 3px var(--tg-theme-link-color); /* Используем цвет ссылки для фокуса */
         }
+
         /* Базовые стили для плавного появления/исчезновения */
         .fade-transition {
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
         }
-        /* Состояние "скрыто" для плавного исчезновения */
         .fade-hidden {
             opacity: 0;
-            visibility: hidden; /* Скрывает элемент, но сохраняет его место в DOM */
+            visibility: hidden;
         }
-        /* Состояние "видимо" для плавного появления */
         .fade-visible {
             opacity: 1;
             visibility: visible;
         }
+
         /* Стили для анимированного процента */
         .animated-percent {
             transition: color 0.3s ease-in-out; /* Плавное изменение цвета */
         }
+
+        /* Переопределяем Tailwind-классы с помощью CSS-переменных и !important для приоритета */
+        #app {
+            background-color: var(--tg-theme-secondary-bg-color) !important; /* Фон карточки приложения */
+            color: var(--tg-theme-text-color) !important; /* Основной текст */
+        }
+
+        h1, h2, h3 {
+            color: var(--tg-theme-text-color) !important; /* Заголовки */
+        }
+
+        /* Переопределяем цвета текста Tailwind */
+        .text-gray-700, .text-gray-800 {
+            color: var(--tg-theme-text-color) !important; /* Весь основной текст */
+        }
+        .text-gray-400 { /* Для --% placeholder и неактивных элементов */
+            color: var(--tg-theme-hint-color) !important;
+        }
+        .text-blue-600 { /* Для основного процента, когда он синий */
+            color: var(--tg-theme-link-color) !important; /* Цвет ссылок из темы */
+        }
+
+        /* Стили для полей ввода */
+        input {
+            color: var(--tg-theme-text-color) !important;
+            background-color: var(--tg-theme-bg-color) !important; /* Фон поля ввода как основной фон темы */
+            border-color: var(--tg-theme-hint-color) !important; /* Цвет границы от цвета подсказок */
+        }
+
         /* Стили для кнопки LLM */
         .llm-button {
-            background-color: var(--tg-theme-button-color); /* Используем цвет кнопки из темы */
-            color: var(--tg-theme-button-text-color); /* Используем цвет текста кнопки из темы */
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            background-color: var(--tg-theme-button-color) !important; /* Используем цвет кнопки из темы */
+            color: var(--tg-theme-button-text-color) !important; /* Используем цвет текста кнопки из темы */
         }
         .llm-button:hover {
-            /* Слегка затемняем цвет кнопки при наведении */
-            background-color: color-mix(in srgb, var(--tg-theme-button-color) 90%, black);
-            transform: translateY(-1px);
-        }
-        .llm-button:active {
-            transform: translateY(0);
+            background-color: color-mix(in srgb, var(--tg-theme-button-color) 90%, black) !important;
         }
         .llm-button:disabled {
-            /* Слегка осветляем цвет кнопки, когда она неактивна */
-            background-color: color-mix(in srgb, var(--tg-theme-button-color) 50%, white);
+            background-color: color-mix(in srgb, var(--tg-theme-button-color) 50%, white) !important;
             cursor: not-allowed;
         }
 
-        /* Адаптация цветов элементов Tailwind к теме Telegram */
-        #app {
-            background-color: var(--tg-theme-bg-color); /* Фон карточки приложения */
-            color: var(--tg-theme-text-color); /* Основной текст */
-        }
-        h1, h2, h3 {
-            color: var(--tg-theme-text-color); /* Заголовки */
-        }
-        .text-gray-700 {
-            color: var(--tg-theme-text-color); /* Текст меток и параграфов */
-        }
-        .text-gray-400 {
-            color: var(--tg-theme-hint-color); /* Цвет подсказок и неактивных элементов */
-        }
-        .text-blue-600 { /* Для основного процента, когда он синий */
-            color: var(--tg-theme-link-color); /* Цвет ссылок из темы */
-        }
-        /* Модальное окно */
+        /* Стили для модального окна */
         .modal-background { /* bg-gray-600 bg-opacity-75 */
-            background-color: color-mix(in srgb, var(--tg-theme-bg-color) 75%, black);
+            background-color: color-mix(in srgb, var(--tg-theme-bg-color) 75%, black) !important;
         }
         .modal-content { /* bg-white */
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
+            background-color: var(--tg-theme-secondary-bg-color) !important;
+            color: var(--tg-theme-text-color) !important;
         }
         .modal-close-button { /* text-gray-500 */
-            color: var(--tg-theme-hint-color);
+            color: var(--tg-theme-hint-color) !important;
         }
         .modal-close-button:hover { /* hover:text-gray-700 */
-            color: var(--tg-theme-text-color);
+            color: var(--tg-theme-text-color) !important;
         }
 
         /* Специфичные цвета для диапазонов процента остаются как есть, так как они не зависят от темы Telegram */
-        .text-yellow-500 { color: #f59e0b; } /* Tailwind yellow-500 */
-        .text-red-600 { color: #dc2626; }    /* Tailwind red-600 */
-        .text-green-600 { color: #16a34a; }  /* Tailwind green-600 */
+        .text-yellow-500 { color: #f59e0b !important; } /* Tailwind yellow-500 */
+        .text-red-600 { color: #dc2626 !important; }    /* Tailwind red-600 */
+        .text-green-600 { color: #16a34a !important; }  /* Tailwind green-600 */
 
     </style>
     <!-- Подключаем Telegram Web App API -->
@@ -114,7 +116,7 @@
 </head>
 <body class="flex items-center justify-center min-h-screen">
 
-    <div id="app" class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md relative">
+    <div id="app" class="p-8 rounded-xl shadow-lg w-full max-w-md relative">
         <!-- Заголовок -->
         <h1 class="text-3xl font-bold text-center mb-6">Калькулятор Плотности</h1>
 
@@ -130,7 +132,6 @@
                     @input="calculateResult"
                     placeholder="Например, 1448"
                     class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 leading-tight focus:ring-2 focus:border-transparent transition duration-200 ease-in-out"
-                    :style="{ 'color': 'var(--tg-theme-text-color)', 'background-color': 'var(--tg-theme-bg-color)' }"
                 >
                 <div class="flex-shrink-0 min-w-[100px] text-right">
                     <!-- Анимированный процент с динамическим цветом -->
@@ -182,44 +183,44 @@
                 >
                     &times;
                 </button>
-                <h2 class="text-2xl font-bold mb-4 modal-text">Как пользоваться Калькулятором Плотности</h2>
+                <h2 class="text-2xl font-bold mb-4">Как пользоваться Калькулятором Плотности</h2>
 
-                <p class="mb-4 modal-text">Это приложение поможет вам определить процентное значение, соответствующее введенному весу, используя данные из нашей таблицы плотности.</p>
+                <p class="mb-4">Это приложение поможет вам определить процентное значение, соответствующее введенному весу, используя данные из нашей таблицы плотности.</p>
 
                 <div class="mb-4">
-                    <h3 class="text-xl font-semibold mb-2 modal-text">1. Поле ввода веса</h3>
-                    <p class="mb-2 modal-text">
+                    <h3 class="text-xl font-semibold mb-2">1. Поле ввода веса</h3>
+                    <p class="mb-2">
                         <span class="font-bold">Элемент:</span> Поле ввода (выглядит как прямоугольное поле с текстом 'Например, 1448').
-                        
+                        <!--  - Замените на реальное изображение, если доступно -->
                     </p>
-                    <p class="modal-text">
+                    <p>
                         <span class="font-bold">Назначение:</span> Сюда вы вводите числовое значение веса в граммах. При каждом изменении веса результат обновляется автоматически.
                     </p>
                 </div>
 
                 <div class="mb-4">
-                    <h3 class="text-xl font-semibold mb-2 modal-text">2. Основной результат</h3>
-                    <p class="mb-2 modal-text">
+                    <h3 class="text-xl font-semibold mb-2">2. Основной результат</h3>
+                    <p class="mb-2">
                         <span class="font-bold">Элемент:</span> Большое число с символом '%' справа от поля ввода (например, '42%').
-                        
+                        <!--  - Замените на реальное изображение, если доступно -->
                     </p>
-                    <p class="modal-text">
+                    <p>
                         <span class="font-bold">Назначение:</span> Этот показатель отображает ближайшее процентное значение, найденное в нашей таблице данных, соответствующее введенному весу. Если точное совпадение найдено, отображается именно оно.
                     </p>
                 </div>
 
                 <div class="mb-4">
-                    <h3 class="text-xl font-semibold mb-2 modal-text">3. Точный расчет (Интерполяция)</h3>
-                    <p class="mb-2 modal-text">
+                    <h3 class="text-xl font-semibold mb-2">3. Точный расчет (Интерполяция)</h3>
+                    <p class="mb-2">
                         <span class="font-bold">Элемент:</span> Текст 'Точный расчет: XX.XX%' (появляется под полем ввода, если нет точного совпадения).
-                        
+                        <!--  - Замените на реальное изображение, если доступно -->
                     </p>
-                    <p class="modal-text">
+                    <p>
                         <span class="font-bold">Назначение:</span> Если введенный вами вес не имеет точного совпадения в нашей таблице, приложение выполняет **линейную интерполяцию**. Это означает, что оно рассчитывает наиболее точное процентное значение, основываясь на двух ближайших точках данных в таблице (одна меньше введенного веса, другая больше). Этот результат может быть дробным.
                     </p>
                 </div>
 
-                <p class="modal-text">Надеемся, это руководство поможет вам эффективно использовать калькулятор!</p>
+                <p>Надеемся, это руководство поможет вам эффективно использовать калькулятор!</p>
             </div>
         </div>
     </div>
@@ -397,67 +398,4 @@
                                 const percentDiff = upperPoint.percent - lowerPoint.percent;
                                 const interpolatedValue = lowerPoint.percent +
                                     (weight - lowerPoint.weight) * (percentDiff / weightDiff);
-                                this.interpolatedResult = parseFloat(interpolatedValue.toFixed(2));
-
-                            } else if (lowerPoint && !upperPoint && weight > lowerPoint.weight) {
-                                // Вес больше максимального в таблице
-                                this.resultPercent = lowerPoint.percent;
-                                this.interpolatedResult = lowerPoint.percent;
-                                this.errorMessage = 'Вес превышает данные в таблице. Показан максимальный процент.';
-                            } else if (!lowerPoint && upperPoint && weight < upperPoint.weight) {
-                                // Вес меньше минимального в таблице
-                                this.resultPercent = upperPoint.percent;
-                                this.interpolatedResult = upperPoint.percent;
-                                this.errorMessage = 'Вес меньше данных в таблице. Показан минимальный процент.';
-                            } else {
-                                this.resultPercent = null;
-                                this.interpolatedResult = null;
-                                this.errorMessage = 'Недостаточно данных для расчета.';
-                            }
-                        }
-                    }
-                },
-                mounted() {
-                    // Инициализация Telegram Web App
-                    if (window.Telegram && window.Telegram.WebApp) {
-                        window.Telegram.WebApp.ready(); // Сообщаем Telegram, что приложение готово
-                        window.Telegram.WebApp.expand(); // Запрашиваем полноэкранный режим
-
-                        // Применяем параметры темы Telegram
-                        const themeParams = window.Telegram.WebApp.themeParams;
-                        if (themeParams) {
-                            document.documentElement.style.setProperty('--tg-theme-bg-color', themeParams.bg_color || '#f0f2f5');
-                            document.documentElement.style.setProperty('--tg-theme-text-color', themeParams.text_color || '#333');
-                            document.documentElement.style.setProperty('--tg-theme-hint-color', themeParams.hint_color || '#6b7280');
-                            document.documentElement.style.setProperty('--tg-theme-link-color', themeParams.link_color || '#3b82f6');
-                            document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color || '#6366f1');
-                            document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color || '#ffffff');
-                        }
-
-                        // Слушаем изменения темы Telegram (например, при переключении пользователем)
-                        window.Telegram.WebApp.onEvent('themeChanged', () => {
-                            const updatedThemeParams = window.Telegram.WebApp.themeParams;
-                            if (updatedThemeParams) {
-                                document.documentElement.style.setProperty('--tg-theme-bg-color', updatedThemeParams.bg_color || '#f0f2f5');
-                                document.documentElement.style.setProperty('--tg-theme-text-color', updatedThemeParams.text_color || '#333');
-                                document.documentElement.style.setProperty('--tg-theme-hint-color', updatedThemeParams.hint_color || '#6b7280');
-                                document.documentElement.style.setProperty('--tg-theme-link-color', updatedThemeParams.link_color || '#3b82f6');
-                                document.documentElement.style.setProperty('--tg-theme-button-color', updatedThemeParams.button_color || '#6366f1');
-                                document.documentElement.style.setProperty('--tg-theme-button-text-color', updatedThemeParams.button_text_color || '#ffffff');
-                            }
-                        });
-                    }
-
-                    // Убедимся, что начальное значение animatedResultPercent соответствует resultPercent
-                    if (this.resultPercent !== null) {
-                        this.animatedResultPercent = this.resultPercent;
-                    }
-                    this.calculateResult();
-                }
-            });
-
-            app.mount('#app');
-        });
-    </script>
-</body>
-</html>
+                                this.inter
