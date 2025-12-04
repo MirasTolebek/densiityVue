@@ -3,472 +3,382 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор Плотности</title>
-    <!-- Подключение Tailwind CSS для современного дизайна -->
+    <title>Калькулятор в Стиле Apple</title>
+    <!-- Загрузка Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Определяем CSS-переменные для темы Telegram на корневом уровне */
-        :root {
-            --tg-theme-bg-color: #f0f2f5; /* Светло-серый фон по умолчанию */
-            --tg-theme-text-color: #333; /* Темный текст по умолчанию */
-            --tg-theme-hint-color: #6b7280; /* Серый текст подсказок по умолчанию */
-            --tg-theme-link-color: #3b82f6; /* Синяя ссылка по умолчанию */
-            --tg-theme-button-color: #6366f1; /* Индиго кнопка по умолчанию */
-            --tg-theme-button-text-color: #ffffff; /* Белый текст кнопки по умолчанию */
-            --tg-theme-secondary-bg-color: #ffffff; /* Вторичный фон (для карточек) по умолчанию */
-        }
-
-        /* Применяем основные цвета темы к body */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            overflow-x: hidden; /* Предотвращаем горизонтальную прокрутку всей страницы */
-        }
-
-        /* Стили для фокуса на полях ввода */
-        input:focus, button:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px var(--tg-theme-link-color); /* Используем цвет ссылки для фокуса */
-        }
-
-        /* Базовые стили для плавного появления/исчезновения */
-        .fade-transition {
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out !important;
-        }
-        .fade-hidden {
-            opacity: 0 !important;
-            visibility: hidden !important;
-        }
-        .fade-visible {
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-
-        /* Стили для анимированного процента */
-        .animated-percent {
-            transition: color 0.3s ease-in-out !important;
-        }
-
-        /* Применяем цвета темы к основным элементам приложения */
-        #app {
-            background-color: var(--tg-theme-secondary-bg-color) !important;
-            color: var(--tg-theme-text-color) !important;
-        }
-
-        h1, h2, h3 {
-            color: var(--tg-theme-text-color) !important;
-        }
-
-        /* Применяем цвета текста к элементам, которые ранее имели Tailwind text-gray-xxx */
-        .tg-text-main {
-            color: var(--tg-theme-text-color) !important;
-        }
-        .tg-text-hint {
-            color: var(--tg-theme-hint-color) !important;
-        }
-        .tg-text-link {
-            color: var(--tg-theme-link-color) !important;
-        }
-
-        /* Стили для полей ввода */
-        input {
-            color: var(--tg-theme-text-color) !important;
-            background-color: var(--tg-theme-bg-color) !important;
-            border-color: var(--tg-theme-hint-color) !important;
-        }
-        /* Стили для фокуса на input */
-        input:focus {
-            box-shadow: 0 0 0 3px var(--tg-theme-link-color) !important;
-            border-color: var(--tg-theme-link-color) !important;
-        }
-
-        /* Стили для кнопки инструкций */
-        .instruction-button {
-            background-color: transparent !important;
-            color: var(--tg-theme-hint-color) !important;
-            transition: color 0.2s ease-in-out !important;
-        }
-        .instruction-button:hover {
-            color: var(--tg-theme-link-color) !important;
-        }
-        .instruction-button:focus {
-            box-shadow: 0 0 0 3px var(--tg-theme-link-color) !important;
-        }
-
-        /* Стили для модального окна */
-        .modal-background {
-            background-color: color-mix(in srgb, var(--tg-theme-bg-color) 75%, black) !important;
-        }
-        .modal-content {
-            background-color: var(--tg-theme-secondary-bg-color) !important;
-            color: var(--tg-theme-text-color) !important;
-        }
-        .modal-close-button {
-            color: var(--tg-theme-hint-color) !important;
-        }
-        .modal-close-button:hover {
-            color: var(--tg-theme-text-color) !important;
-        }
-
-        /* Специфичные цвета для диапазонов процента остаются как есть, так как они не зависят от темы Telegram */
-        .text-yellow-500 { color: #f59e0b !important; }
-        .text-red-600 { color: #dc2626 !important; }
-        .text-green-600 { color: #16a34a !important; }
-
-    </style>
-    <!-- Подключаем Telegram Web App API -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
-<body class="flex items-center justify-center min-h-screen">
-
-    <div id="app" class="p-4 sm:p-8 rounded-xl shadow-lg w-full max-w-md relative">
-        <!-- Заголовок -->
-        <h1 class="text-3xl font-bold text-center mb-6 tg-text-main">Калькулятор Плотности</h1>
-
-        <div class="mb-4">
-            <label for="weightInput" class="block text-sm font-semibold mb-2 tg-text-main">
-                Введите вес (граммы):
-            </label>
-            <div class="flex items-center space-x-3">
-                <input
-                    type="number"
-                    id="weightInput"
-                    v-model.number="inputWeight"
-                    @input="calculateResult"
-                    placeholder="Например, 1448"
-                    class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 leading-tight focus:ring-2 focus:border-transparent transition duration-200 ease-in-out"
-                >
-                <div class="flex-shrink-0" style="min-width: 60px; text-align: right;">
-                    <!-- Анимированный процент с динамическим цветом -->
-                    <span v-if="resultPercent !== null"
-                          class="text-xl font-bold animated-percent"
-                          :class="percentColorClass">
-                        {{ Math.round(animatedResultPercent) }}%
-                    </span>
-                    <span v-else class="text-xl font-bold tg-text-hint">
-                        --%
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Контейнер для интерполированного результата, всегда занимает место -->
-        <div class="min-h-[24px] flex items-center justify-center">
-            <div
-                class="text-center text-sm fade-transition tg-text-hint"
-                :class="{ 'fade-visible': interpolatedResult !== null && interpolatedResult !== resultPercent, 'fade-hidden': !(interpolatedResult !== null && interpolatedResult !== resultPercent) }"
-            >
-                Точный расчет: <span class="font-semibold">{{ interpolatedResult }}%</span>
-            </div>
-        </div>
-
-        <!-- Кнопка инструкций - теперь в правом нижнем углу и менее заметна -->
-        <button
-            @click="showInstructions = !showInstructions"
-            class="absolute bottom-4 right-4 p-2 rounded-full instruction-button"
-            aria-label="Показать инструкции"
-            title="Инструкции"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </button>
-
-        <!-- Модальное окно инструкций -->
-        <div
-            v-show="showInstructions"
-            class="fixed inset-0 flex items-center justify-center z-50 fade-transition modal-background"
-            :class="{ 'fade-visible': showInstructions, 'fade-hidden': !showInstructions }"
-        >
-            <div class="p-6 rounded-xl shadow-2xl w-full max-w-lg mx-4 relative overflow-y-auto max-h-[90vh] modal-content">
-                <button
-                    @click="showInstructions = false"
-                    class="absolute top-4 right-4 text-2xl font-bold leading-none focus:outline-none modal-close-button"
-                    aria-label="Закрыть"
-                >
-                    &times;
-                </button>
-                <h2 class="text-2xl font-bold mb-4 tg-text-main">Как пользоваться Калькулятором Плотности</h2>
-
-                <p class="mb-4 tg-text-main">Это приложение поможет вам определить процентное значение, соответствующее введенному весу, используя данные из нашей таблицы плотности.</p>
-
-                <div class="mb-4">
-                    <h3 class="text-xl font-semibold mb-2 tg-text-main">1. Поле ввода веса</h3>
-                    <p class="mb-2 tg-text-main">
-                        <span class="font-bold">Элемент:</span> Поле ввода (выглядит как прямоугольное поле с текстом 'Например, 1448').
-                        <!--  - Замените на реальное изображение, если доступно -->
-                    </p>
-                    <p class="tg-text-main">
-                        <span class="font-bold">Назначение:</span> Сюда вы вводите числовое значение веса в граммах. При каждом изменении веса результат обновляется автоматически.
-                    </p>
-                </div>
-
-                <div class="mb-4">
-                    <h3 class="text-xl font-semibold mb-2 tg-text-main">2. Основной результат</h3>
-                    <p class="mb-2 tg-text-main">
-                        <span class="font-bold">Элемент:</span> Большое число с символом '%' справа от поля ввода (например, '42%').
-                        <!--  - Замените на реальное изображение, если доступно -->
-                    </p>
-                    <p class="tg-text-main">
-                        <span class="font-bold">Назначение:</span> Этот показатель отображает ближайшее процентное значение, найденное в нашей таблице данных, соответствующее введенному весу. Если точное совпадение найдено, отображается именно оно.
-                    </p>
-                </div>
-
-                <div class="mb-4">
-                    <h3 class="text-xl font-semibold mb-2 tg-text-main">3. Точный расчет (Интерполяция)</h3>
-                    <p class="mb-2 tg-text-main">
-                        <span class="font-bold">Элемент:</span> Текст 'Точный расчет: XX.XX%' (появляется под полем ввода, если нет точного совпадения).
-                        <!--  - Замените на реальное изображение, если доступно -->
-                    </p>
-                    <p class="tg-text-main">
-                        <span class="font-bold">Назначение:</span> Если введенный вами вес не имеет точного совпадения в нашей таблице, приложение выполняет **линейную интерполяцию**. Это означает, что оно рассчитывает наиболее точное процентное значение, основываясь на двух ближайших точках данных в таблице (одна меньше введенного веса, другая больше). Этот результат может быть дробным.
-                    </p>
-                </div>
-
-                <p class="tg-text-main">Надеемся, это руководство поможет вам эффективно использовать калькулятор!</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Подключаем Vue.js из CDN -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
+    <!-- Настройка шрифта Inter и адаптивных классов Tailwind -->
     <script>
-        // Данные из densityData.js
-        const densityChart = [
-            { weight: 1038, percent: 5 },
-            { weight: 1046, percent: 6 },
-            { weight: 1054, percent: 7 },
-            { weight: 1063, percent: 8 },
-            { weight: 1071, percent: 9 },
-            { weight: 1080, percent: 10 },
-            { weight: 1088, percent: 11 },
-            { weight: 1097, percent: 12 },
-            { weight: 1106, percent: 13 },
-            { weight: 1115, percent: 14 },
-            { weight: 1124, percent: 15 },
-            { weight: 1133, percent: 16 },
-            { weight: 1143, percent: 17 },
-            { weight: 1153, percent: 18 },
-            { weight: 1163, percent: 19 },
-            { weight: 1173, percent: 20 },
-            { weight: 1184, percent: 21 },
-            { weight: 1195, percent: 22 },
-            { weight: 1204, percent: 23 },
-            { weight: 1215, percent: 24 },
-            { weight: 1226, percent: 25 },
-            { weight: 1237, percent: 26 },
-            { weight: 1248, percent: 27 },
-            { weight: 1260, percent: 28 },
-            { weight: 1272, percent: 29 },
-            { weight: 1284, percent: 30 },
-            { weight: 1296, percent: 31 },
-            { weight: 1309, percent: 32 },
-            { weight: 1321, percent: 33 },
-            { weight: 1334, percent: 34 },
-            { weight: 1348, percent: 35 },
-            { weight: 1361, percent: 36 },
-            { weight: 1375, percent: 37 },
-            { weight: 1383, percent: 38 },
-            { weight: 1403, percent: 39 },
-            { weight: 1418, percent: 40 },
-            { weight: 1433, percent: 41 },
-            { weight: 1448, percent: 42 },
-            { weight: 1464, percent: 43 },
-            { weight: 1480, percent: 44 },
-            { weight: 1496, percent: 45 },
-            { weight: 1513, percent: 46 },
-            { weight: 1539, percent: 47 },
-            { weight: 1547, percent: 48 },
-            { weight: 1565, percent: 49 },
-            { weight: 1583, percent: 50 },
-            { weight: 1621, percent: 52 },
-            { weight: 1661, percent: 54 },
-            { weight: 1703, percent: 56 },
-            { weight: 1746, percent: 58 },
-            { weight: 1792, percent: 60 },
-            { weight: 1841, percent: 62 },
-            { weight: 1892, percent: 64 },
-            { weight: 1947, percent: 66 },
-            { weight: 2004, percent: 68 },
-            { weight: 2065, percent: 70 },
-        ];
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const app = Vue.createApp({
-                data() {
-                    return {
-                        inputWeight: null, // Вес, введенный пользователем
-                        resultPercent: null, // Ближайший результат в процентах (целое число)
-                        interpolatedResult: null, // Точный интерполированный результат (дробное число)
-                        errorMessage: '', // Сообщение об ошибке (только для внутренней логики)
-                        showInstructions: false, // Флаг для показа/скрытия инструкций
-                        animatedResultPercent: 0 // Для анимации основного процента
-                    };
-                },
-                watch: {
-                    // Отслеживаем изменения resultPercent для запуска анимации
-                    resultPercent(newValue, oldValue) {
-                        if (newValue !== null) {
-                            this.animateNumber(newValue);
-                        } else {
-                            // Если результат сброшен, сбрасываем и анимированное значение
-                            this.animatedResultPercent = 0;
-                        }
-                    }
-                },
-                computed: {
-                    // Вычисляемое свойство для определения класса цвета процента
-                    percentColorClass() {
-                        const percent = Math.round(this.animatedResultPercent); // Используем округленное значение для определения цвета
-
-                        if (percent < 35) {
-                            return 'text-red-600'; // Красный
-                        } else if (percent >= 35 && percent <= 40) {
-                            return 'text-yellow-500'; // Желтый
-                        } else if (percent > 40 && percent < 43) {
-                            return 'text-green-600'; // Зеленый
-                        } else if (percent >= 43 && percent <= 47) {
-                            return 'text-yellow-500'; // Желтый
-                        } else if (percent > 47) {
-                            return 'text-red-600'; // Красный
-                        }
-                        return 'tg-text-hint'; // Цвет по умолчанию, теперь из темы Telegram
-                    }
-                },
-                methods: {
-                    // Функция для плавной анимации числа
-                    animateNumber(targetValue) {
-                        const startValue = this.animatedResultPercent;
-                        const duration = 300; // Продолжительность анимации в мс
-                        let startTime = null;
-
-                        const animate = (currentTime) => {
-                            if (!startTime) startTime = currentTime;
-                            const progress = (currentTime - startTime) / duration;
-
-                            if (progress < 1) {
-                                this.animatedResultPercent = startValue + (targetValue - startValue) * progress;
-                                requestAnimationFrame(animate);
-                            } else {
-                                this.animatedResultPercent = targetValue;
-                            }
-                        };
-
-                        requestAnimationFrame(animate);
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
                     },
-                    calculateResult() {
-                        this.errorMessage = ''; // Очищаем сообщение об ошибке
-                        this.resultPercent = null; // Сбрасываем ближайший результат
-                        this.interpolatedResult = null; // Сбрасываем интерполированный результат
-
-                        const weight = this.inputWeight;
-
-                        if (weight === null || weight === '' || isNaN(weight) || weight <= 0) {
-                            this.errorMessage = 'Пожалуйста, введите корректный вес.';
-                            this.resultPercent = null; // Убедимся, что результат сброшен для анимации
-                            return;
-                        }
-
-                        let exactMatchFound = false;
-                        let lowerPoint = null;
-                        let upperPoint = null;
-
-                        for (let i = 0; i < densityChart.length; i++) {
-                            if (densityChart[i].weight === weight) {
-                                // Точное совпадение
-                                this.resultPercent = densityChart[i].percent;
-                                this.interpolatedResult = densityChart[i].percent; // Если точное совпадение, интерполированный равен ему же
-                                exactMatchFound = true;
-                                break;
-                            }
-                            if (densityChart[i].weight < weight) {
-                                lowerPoint = densityChart[i];
-                            } else if (densityChart[i].weight > weight) {
-                                upperPoint = densityChart[i];
-                                break; // Нашли верхнюю точку, можно выйти
-                            }
-                        }
-
-                        if (!exactMatchFound) {
-                            // Если точного совпадения нет, рассчитываем ближайший и интерполированный
-                            if (lowerPoint && upperPoint) {
-                                // Вычисляем ближайший процент
-                                const diffToLower = Math.abs(weight - lowerPoint.weight);
-                                const diffToUpper = Math.abs(weight - upperPoint.weight);
-                                this.resultPercent = diffToLower < diffToUpper ? lowerPoint.percent : upperPoint.percent;
-
-                                // Вычисляем интерполированный процент
-                                const weightDiff = upperPoint.weight - lowerPoint.weight;
-                                const percentDiff = upperPoint.percent - lowerPoint.percent;
-                                const interpolatedValue = lowerPoint.percent +
-                                    (weight - lowerPoint.weight) * (percentDiff / weightDiff);
-                                this.interpolatedResult = parseFloat(interpolatedValue.toFixed(2));
-
-                            } else if (lowerPoint && !upperPoint && weight > lowerPoint.weight) {
-                                // Вес больше максимального в таблице
-                                this.resultPercent = lowerPoint.percent;
-                                this.interpolatedResult = lowerPoint.percent;
-                                this.errorMessage = 'Вес превышает данные в таблице. Показан максимальный процент.';
-                            } else if (!lowerPoint && upperPoint && weight < upperPoint.weight) {
-                                // Вес меньше минимального в таблице
-                                this.resultPercent = upperPoint.percent;
-                                this.interpolatedResult = upperPoint.percent;
-                                this.errorMessage = 'Вес меньше данных в таблице. Показан минимальный процент.';
-                            } else {
-                                this.resultPercent = null;
-                                this.interpolatedResult = null;
-                                this.errorMessage = 'Недостаточно данных для расчета.';
-                            }
-                        }
+                    colors: {
+                        'primary-apple': '#007AFF', // Синий цвет Apple
+                        'success-apple': '#34C759', // Зеленый цвет Apple для успеха
+                        'error-apple': '#FF3B30',  // Красный цвет Apple для ошибок
+                        'card-light': '#FFFFFF',
+                        'bg-light': '#F0F2F5', // Очень светлый фон
+                        'card-dark': '#1C1C1E', // Почти черный для темной темы
+                        'bg-dark': '#000000', // Чистый черный фон для OLED/Apple Dark Mode
                     }
-                },
-                mounted() {
-                    // Инициализация Telegram Web App
-                    if (window.Telegram && window.Telegram.WebApp) {
-                        window.Telegram.WebApp.ready(); // Сообщаем Telegram, что приложение готово
-                        window.Telegram.WebApp.expand(); // Запрашиваем полноэкранный режим
-
-                        // Функция для применения параметров темы
-                        const applyThemeParams = (themeParams) => {
-                            // Устанавливаем CSS-переменные на корневом уровне
-                            document.documentElement.style.setProperty('--tg-theme-bg-color', themeParams.bg_color || '#f0f2f5');
-                            document.documentElement.style.setProperty('--tg-theme-text-color', themeParams.text_color || '#333');
-                            document.documentElement.style.setProperty('--tg-theme-hint-color', themeParams.hint_color || '#6b7280');
-                            document.documentElement.style.setProperty('--tg-theme-link-color', themeParams.link_color || '#3b82f6');
-                            document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color || '#6366f1');
-                            document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color || '#ffffff');
-                            document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', themeParams.secondary_bg_color || '#ffffff');
-
-                            // Применяем цвета к input полю напрямую, так как Tailwind классы могут переопределять
-                            const inputElement = document.getElementById('weightInput');
-                            if (inputElement) {
-                                inputElement.style.color = themeParams.text_color || '#333';
-                                inputElement.style.backgroundColor = themeParams.bg_color || '#f0f2f5';
-                                inputElement.style.borderColor = themeParams.hint_color || '#6b7280';
-                            }
-                        };
-
-                        // Применяем начальные параметры темы
-                        applyThemeParams(window.Telegram.WebApp.themeParams);
-
-                        // Слушаем изменения темы Telegram
-                        window.Telegram.WebApp.onEvent('themeChanged', () => {
-                            applyThemeParams(window.Telegram.WebApp.themeParams);
-                        });
-                    }
-
-                    // Убедимся, что начальное значение animatedResultPercent соответствует resultPercent
-                    if (this.resultPercent !== null) {
-                        this.animatedResultPercent = this.resultPercent;
-                    }
-                    this.calculateResult();
                 }
-            });
-
-            app.mount('#app');
-        });
+            }
+        }
     </script>
+    <style>
+        /* Общие стили для фона и центрирования */
+        .container-wrapper {
+            display: flex;
+            align-items: center; /* Центрирование для ПК/планшета по умолчанию */
+            justify-content: center;
+            padding: 1rem; 
+            min-height: 100vh; 
+            overflow-y: auto; 
+        }
+        
+        /* Адаптивные стили для мобильных устройств (менее 640px) */
+        @media (max-width: 640px) {
+            .container-wrapper {
+                align-items: flex-start; /* Прижимаем контент к верху */
+                padding-top: 4rem; /* УВЕЛИЧЕННЫЙ отступ сверху для заголовка Telegram Mini App */
+                padding-bottom: 0; /* Удаляем нижний отступ, чтобы не было зазора над клавиатурой */
+                min-height: 100%; 
+            }
+        }
+
+        /* Стиль для чистого Apple-подобного ввода */
+        .apple-input {
+            transition: all 0.2s ease-in-out;
+            /* Небольшая тень для эффекта "вдавленности" */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) inset;
+        }
+        .apple-input:focus {
+            outline: none;
+            border-color: '#007AFF'; /* Синий акцент при фокусе */
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3);
+        }
+        .dark .apple-input {
+             /* Убираем тень при инверсии цвета в темной теме */
+            box-shadow: none;
+            border-color: #38383a;
+            background-color: #38383a;
+        }
+        .dark .apple-input:focus {
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.5);
+            border-color: #007AFF;
+        }
+
+        /* Настройка внешнего вида для темной/светлой темы */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #000000; /* Чистый черный */
+                color: #FFFFFF;
+            }
+        }
+        @media (prefers-color-scheme: light) {
+            body {
+                background-color: #F0F2F5; /* Очень светлый фон */
+                color: #1C1C1E;
+            }
+        }
+        
+        /* Убедимся, что body занимает всю высоту */
+        html, body {
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="font-sans transition-colors duration-500">
+
+<div class="container-wrapper">
+    <!-- Основной контейнер калькулятора (Apple Card Style) -->
+    <div class="w-full max-w-sm p-6 bg-card-light dark:bg-card-dark rounded-3xl shadow-xl transition-all duration-500 transform hover:shadow-2xl">
+        
+        <!-- Заголовок в стиле iOS -->
+        <h1 class="text-4xl font-black text-center text-gray-900 dark:text-white mb-2">
+            Калькулятор
+        </h1>
+        <p class="text-center text-sm font-light text-gray-500 dark:text-gray-400 mb-8">
+            Расчет содержания твёрдого в процентах
+        </p>
+
+        <!-- Раздел результатов (Дисплей Калькулятора) -->
+        <div class="p-4 mb-8 rounded-2xl bg-gray-100 dark:bg-[#2C2C2E] shadow-inner">
+            <div class="text-lg font-normal text-gray-500 dark:text-gray-300 mb-2 text-right">
+                % тв
+            </div>
+            
+            <!-- Анимированное отображение процента -->
+            <div id="percentResult" class="text-7xl font-bold text-success-apple dark:text-success-apple text-right transition-colors duration-300 whitespace-nowrap">
+                — %
+            </div>
+        </div>
+
+        <!-- Поле ввода веса -->
+        <div class="mb-6">
+            <label for="weightInput" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-300 mb-2">
+                Вес (г)
+            </label>
+            <input 
+                type="number" 
+                id="weightInput" 
+                placeholder="1038.00 - 2065.00"
+                class="apple-input w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl shadow-md text-xl bg-card-light dark:text-white dark:bg-[#38383a]"
+                min="1038"
+                max="2065"
+                step="0.01"
+            >
+        </div>
+
+        <!-- Кнопка копирования -->
+        <button 
+            id="copyButton" 
+            onclick="handleCopy()" 
+            class="w-full py-3 bg-primary-apple text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-200 hover:opacity-90 active:scale-[0.99] disabled:opacity-50"
+            disabled
+        >
+            Копировать % тв
+        </button>
+    </div>
+</div>
+
+<script>
+    // Исходные данные для интерполяции
+    const INTERPOLATION_DATA = [
+        { "weight": 1038, "percent": 5 },
+        { "weight": 1046, "percent": 6 },
+        { "weight": 1054, "percent": 7 },
+        { "weight": 1063, "percent": 8 },
+        { "weight": 1071, "percent": 9 },
+        { "weight": 1080, "percent": 10 },
+        { "weight": 1088, "percent": 11 },
+        { "weight": 1097, "percent": 12 },
+        { "weight": 1106, "percent": 13 },
+        { "weight": 1115, "percent": 14 },
+        { "weight": 1124, "percent": 15 },
+        { "weight": 1133, "percent": 16 },
+        { "weight": 1143, "percent": 17 },
+        { "weight": 1153, "percent": 18 },
+        { "weight": 1163, "percent": 19 },
+        { "weight": 1173, "percent": 20 },
+        { "weight": 1184, "percent": 21 },
+        { "weight": 1195, "percent": 22 },
+        { "weight": 1204, "percent": 23 },
+        { "weight": 1215, "percent": 24 },
+        { "weight": 1226, "percent": 25 },
+        { "weight": 1237, "percent": 26 },
+        { "weight": 1248, "percent": 27 },
+        { "weight": 1272, "percent": 29 },
+        { "weight": 1284, "percent": 30 },
+        { "weight": 1296, "percent": 31 },
+        { "weight": 1309, "percent": 32 },
+        { "weight": 1321, "percent": 33 },
+        { "weight": 1334, "percent": 34 },
+        { "weight": 1348, "percent": 35 },
+        { "weight": 1361, "percent": 36 },
+        { "weight": 1375, "percent": 37 },
+        { "weight": 1383, "percent": 38 },
+        { "weight": 1403, "percent": 39 },
+        { "weight": 1418, "percent": 40 },
+        { "weight": 1433, "percent": 41 },
+        { "weight": 1448, "percent": 42 },
+        { "weight": 1464, "percent": 43 },
+        { "weight": 1480, "percent": 44 },
+        { "weight": 1496, "percent": 45 },
+        { "weight": 1513, "percent": 46 },
+        { "weight": 1539, "percent": 47 },
+        { "weight": 1547, "percent": 48 },
+        { "weight": 1565, "percent": 49 },
+        { "weight": 1583, "percent": 50 },
+        { "weight": 1621, "percent": 52 },
+        { "weight": 1661, "percent": 54 },
+        { "weight": 1703, "percent": 56 },
+        { "weight": 1746, "percent": 58 },
+        { "weight": 1792, "percent": 60 },
+        { "weight": 1841, "percent": 62 },
+        { "weight": 1892, "percent": 64 },
+        { "weight": 1947, "percent": 66 },
+        { "weight": 2004, "percent": 68 },
+        { "weight": 2065, "percent": 70 }
+    ];
+
+    // Константы для границ
+    const MIN_PERCENT = 5.00;
+    const MAX_PERCENT = 70.00;
+    const MIN_WEIGHT = INTERPOLATION_DATA[0].weight;
+    const MAX_WEIGHT = INTERPOLATION_DATA[INTERPOLATION_DATA.length - 1].weight;
+
+    // Элементы DOM
+    const weightInput = document.getElementById('weightInput');
+    const percentResultDiv = document.getElementById('percentResult');
+    const copyButton = document.getElementById('copyButton');
+    
+    // Переменная для хранения последнего рассчитанного значения
+    let lastCalculatedPercent = null;
+
+
+    /**
+     * Плавно анимирует отображение числа от 0 до целевого значения.
+     * @param {number} targetValue - Конечный процент (ТВ).
+     */
+    function animateCount(targetValue) {
+        const duration = 700; // 0.7 секунды для плавной анимации
+        const start = performance.now();
+        const startValue = 0;
+
+        // Обновляем последнее рассчитанное значение
+        lastCalculatedPercent = targetValue; 
+
+        function step(currentTime) {
+            const elapsed = currentTime - start;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Вычисляем текущее значение, используя плавную кривую (ease-out)
+            const easedProgress = progress * (2 - progress);
+            const currentValue = startValue + (targetValue - startValue) * easedProgress;
+            
+            // Обновляем дисплей, округляем до двух знаков после запятой
+            percentResultDiv.textContent = `${currentValue.toFixed(2)} %`;
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                 // Убеждаемся, что конечное значение точно соответствует целевому
+                 percentResultDiv.textContent = `${targetValue.toFixed(2)} %`;
+
+                 // Применяем цвета в зависимости от границ
+                 if (targetValue === MIN_PERCENT || targetValue === MAX_PERCENT) {
+                     percentResultDiv.classList.add('text-error-apple'); // Красный для границы
+                     percentResultDiv.classList.remove('text-success-apple');
+                 } else {
+                     percentResultDiv.classList.add('text-success-apple'); // Зеленый для нормального значения
+                     percentResultDiv.classList.remove('text-error-apple');
+                 }
+            }
+        }
+        
+        // Сброс цвета перед началом анимации
+        percentResultDiv.classList.remove('text-error-apple', 'text-success-apple');
+
+        requestAnimationFrame(step);
+    }
+
+    /**
+     * Выполняет линейную интерполяцию для нахождения процента по весу.
+     * @param {number} weight - Входное значение веса.
+     * @returns {number} Рассчитанный или ограниченный процент.
+     */
+    function calculatePercent(weight) {
+        if (weight < MIN_WEIGHT) return MIN_PERCENT;
+        if (weight > MAX_WEIGHT) return MAX_PERCENT;
+
+        let lower = null;
+        let upper = null;
+
+        for (let i = 0; i < INTERPOLATION_DATA.length - 1; i++) {
+            if (weight >= INTERPOLATION_DATA[i].weight && weight <= INTERPOLATION_DATA[i+1].weight) {
+                lower = INTERPOLATION_DATA[i];
+                upper = INTERPOLATION_DATA[i+1];
+                break;
+            }
+        }
+        
+        if (!lower) {
+            if (weight === MAX_WEIGHT) { lower = upper = INTERPOLATION_DATA[INTERPOLATION_DATA.length - 1]; } 
+            else if (weight === MIN_WEIGHT) { lower = upper = INTERPOLATION_DATA[0]; }
+        }
+
+        if (lower && upper) {
+            if (lower.weight === upper.weight) {
+                return parseFloat(lower.percent.toFixed(2));
+            } else {
+                const x1 = lower.weight;
+                const y1 = lower.percent;
+                const x2 = upper.weight;
+                const y2 = upper.percent;
+
+                const interpolatedPercent = y1 + (weight - x1) * ((y2 - y1) / (x2 - x1));
+                
+                return parseFloat(interpolatedPercent.toFixed(2));
+            }
+        } 
+
+        return 0;
+    }
+
+    /**
+     * Основная функция-обработчик ввода.
+     */
+    function handleInput() {
+        const rawWeight = weightInput.value;
+        const weight = parseFloat(rawWeight);
+
+        // Сброс, если ввод пустой или некорректный
+        if (rawWeight.trim() === '' || isNaN(weight) || weight <= 0) {
+            percentResultDiv.textContent = '— %';
+            percentResultDiv.classList.remove('text-success-apple', 'text-error-apple');
+            copyButton.disabled = true; // Деактивируем кнопку копирования
+            return;
+        }
+
+        const calculatedPercent = calculatePercent(weight);
+        
+        // Запуск анимированного счетчика
+        animateCount(calculatedPercent);
+        copyButton.disabled = false; // Активируем кнопку копирования
+    }
+
+    /**
+     * Обработчик копирования результата с округлением до ближайшего целого.
+     */
+    function handleCopy() {
+        if (lastCalculatedPercent === null) {
+            console.error("Нет значения для копирования.");
+            return;
+        }
+
+        // 1. Округляем до ближайшего целого (42.30 -> 42, 42.78 -> 43)
+        const roundedPercent = Math.round(lastCalculatedPercent);
+        
+        // 2. Форматируем строку для копирования
+        const textToCopy = `${roundedPercent}%`;
+
+        // 3. Выполняем копирование (используя временное поле для кросс-браузерной совместимости в iframe)
+        const tempInput = document.createElement('textarea');
+        tempInput.value = textToCopy;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        
+        try {
+            document.execCommand('copy');
+            
+            // Визуальное подтверждение
+            const originalText = copyButton.textContent;
+            copyButton.textContent = "Скопировано!";
+            copyButton.classList.add('bg-success-apple');
+            copyButton.classList.remove('bg-primary-apple');
+
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+                copyButton.classList.remove('bg-success-apple');
+                copyButton.classList.add('bg-primary-apple');
+            }, 1500); // 1.5 секунды
+            
+        } catch (err) {
+            console.error('Не удалось скопировать текст:', err);
+        } finally {
+            document.body.removeChild(tempInput);
+        }
+    }
+
+    // Инициализация: Добавление слушателя события ввода
+    window.onload = function() {
+        weightInput.addEventListener('input', handleInput);
+    };
+
+</script>
+
 </body>
 </html>
