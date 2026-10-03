@@ -2,65 +2,55 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Калькулятор в Стиле Apple</title>
-    <!-- Загрузка Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Настройка шрифта Inter и адаптивных классов Tailwind -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        'primary-apple': '#007AFF', // Синий цвет Apple
-                        'success-apple': '#34C759', // Зеленый цвет Apple для успеха
-                        'error-apple': '#FF3B30',  // Красный цвет Apple для ошибок
+                        'primary-apple': '#007AFF',
+                        'success-apple': '#34C759',
+                        'error-apple': '#FF3B30',
                         'card-light': '#FFFFFF',
-                        'bg-light': '#F0F2F5', // Очень светлый фон
-                        'card-dark': '#1C1C1E', // Почти черный для темной темы
-                        'bg-dark': '#000000', // Чистый черный фон для OLED/Apple Dark Mode
+                        'bg-light': '#F0F2F5',
+                        'card-dark': '#1C1C1E',
+                        'bg-dark': '#000000',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Общие стили для фона и центрирования */
+        :root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
         .container-wrapper {
             display: flex;
-            align-items: center; /* Центрирование для ПК/планшета по умолчанию */
+            align-items: center;
             justify-content: center;
-            padding: 1rem; 
-            min-height: 100vh; 
-            overflow-y: auto; 
+            padding: 1rem;
+            min-height: 100vh;
+            overflow-y: auto;
         }
-        
-        /* Адаптивные стили для мобильных устройств (менее 640px) */
         @media (max-width: 640px) {
             .container-wrapper {
-                align-items: flex-start; /* Прижимаем контент к верху */
-                padding-top: 4rem; /* УВЕЛИЧЕННЫЙ отступ сверху для заголовка Telegram Mini App */
-                padding-bottom: 0; /* Удаляем нижний отступ, чтобы не было зазора над клавиатурой */
-                min-height: 100%; 
+                align-items: flex-start;
+                padding-top: 4rem;
+                padding-bottom: 0;
+                min-height: 100%;
             }
         }
-
-        /* Стиль для чистого Apple-подобного ввода */
         .apple-input {
             transition: all 0.2s ease-in-out;
-            /* Небольшая тень для эффекта "вдавленности" */
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) inset;
         }
         .apple-input:focus {
             outline: none;
-            border-color: '#007AFF'; /* Синий акцент при фокусе */
+            border-color: #007AFF;
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3);
         }
         .dark .apple-input {
-             /* Убираем тень при инверсии цвета в темной теме */
             box-shadow: none;
             border-color: #38383a;
             background-color: #38383a;
@@ -69,34 +59,25 @@
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.5);
             border-color: #007AFF;
         }
-
-        /* Настройка внешнего вида для темной/светлой темы */
         @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #000000; /* Чистый черный */
-                color: #FFFFFF;
-            }
+            body { background-color: #000000; color: #FFFFFF; }
         }
         @media (prefers-color-scheme: light) {
-            body {
-                background-color: #F0F2F5; /* Очень светлый фон */
-                color: #1C1C1E;
-            }
+            body { background-color: #F0F2F5; color: #1C1C1E; }
         }
-        
-        /* Убедимся, что body занимает всю высоту */
-        html, body {
-            height: 100%;
-        }
+        html, body { height: 100%; }
+        .result-box { cursor: pointer; user-select: none; -webkit-user-select: none; transition: transform 0.15s ease; }
+        .result-box:active { transform: scale(0.97); }
     </style>
 </head>
 <body class="font-sans transition-colors duration-500">
 
+<!-- Плавающая надпись с текущей сменой -->
+<div id="shiftBadge" class="fixed left-1/2 -translate-x-1/2 z-50 px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap bg-card-light dark:bg-[#2C2C2E] text-gray-900 dark:text-white shadow-lg" style="top: calc(env(safe-area-inset-top, 0px) + 1rem);">Смена №—</div>
+
 <div class="container-wrapper">
-    <!-- Основной контейнер калькулятора (Apple Card Style) -->
     <div class="w-full max-w-sm p-6 bg-card-light dark:bg-card-dark rounded-3xl shadow-xl transition-all duration-500 transform hover:shadow-2xl">
-        
-        <!-- Заголовок в стиле iOS -->
+
         <h1 class="text-4xl font-black text-center text-gray-900 dark:text-white mb-2">
             Калькулятор
         </h1>
@@ -104,38 +85,83 @@
             Расчет содержания твёрдого в процентах
         </p>
 
-        <!-- Раздел результатов (Дисплей Калькулятора) -->
-        <div class="p-4 mb-8 rounded-2xl bg-gray-100 dark:bg-[#2C2C2E] shadow-inner">
-            <div class="text-lg font-normal text-gray-500 dark:text-gray-300 mb-2 text-right">
-                % тв
-            </div>
-            
-            <!-- Анимированное отображение процента -->
-            <div id="percentResult" class="text-7xl font-bold text-success-apple dark:text-success-apple text-right transition-colors duration-300 whitespace-nowrap">
-                — %
-            </div>
-        </div>
-
-        <!-- Поле ввода веса -->
+        <!-- Разгрузка -->
         <div class="mb-6">
-            <label for="weightInput" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-300 mb-2">
-                Вес (г)
-            </label>
-            <input 
-                type="number" 
-                id="weightInput" 
-                placeholder="1038.00 - 2065.00"
-                class="apple-input w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl shadow-md text-xl bg-card-light dark:text-white dark:bg-[#38383a]"
-                min="1038"
-                max="2065"
-                step="0.01"
-            >
+            <div class="grid grid-cols-2 gap-3 mb-2">
+                <label for="input-unload" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-300">
+                    Разгрузка (г)
+                </label>
+                <div class="text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-300 text-right">
+                    % тв
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 items-stretch">
+                <div class="relative min-w-0">
+                    <input
+                        type="number"
+                        id="input-unload"
+                        inputmode="decimal"
+                        placeholder="1038 - 2065"
+                        class="apple-input w-full min-w-0 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl shadow-md text-xl bg-card-light dark:text-white dark:bg-[#38383a]"
+                        step="0.01"
+                    >
+                    <span id="net-unload" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-[11px] leading-none whitespace-nowrap pointer-events-none text-gray-500 dark:text-gray-400"></span>
+                </div>
+                <div id="box-unload" class="result-box flex items-center justify-end px-3 rounded-2xl bg-gray-100 dark:bg-[#2C2C2E] shadow-inner">
+                    <div id="result-unload" class="text-3xl font-bold text-success-apple text-right transition-colors duration-300 whitespace-nowrap">— %</div>
+                </div>
+            </div>
         </div>
 
-        <!-- Кнопка копирования -->
-        <button 
-            id="copyButton" 
-            onclick="handleCopy()" 
+        <!-- Слива -->
+        <div class="mb-6">
+            <div class="grid grid-cols-2 gap-3 mb-2">
+                <label for="input-drain" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-300">
+                    Слива (г)
+                </label>
+                <div class="text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-300 text-right">
+                    % тв
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 items-stretch">
+                <div class="relative min-w-0">
+                    <input
+                        type="number"
+                        id="input-drain"
+                        inputmode="decimal"
+                        placeholder="1038 - 2065"
+                        class="apple-input w-full min-w-0 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl shadow-md text-xl bg-card-light dark:text-white dark:bg-[#38383a]"
+                        step="0.01"
+                    >
+                    <span id="net-drain" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-[11px] leading-none whitespace-nowrap pointer-events-none text-gray-500 dark:text-gray-400"></span>
+                </div>
+                <div id="box-drain" class="result-box flex items-center justify-end px-3 rounded-2xl bg-gray-100 dark:bg-[#2C2C2E] shadow-inner">
+                    <div id="result-drain" class="text-3xl font-bold text-success-apple text-right transition-colors duration-300 whitespace-nowrap">— %</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вес кружки -->
+        <div class="mb-8">
+            <div class="grid grid-cols-2 gap-3 items-center">
+                <label for="mugCheck" class="flex items-center gap-2 cursor-pointer select-none text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-300">
+                    <input type="checkbox" id="mugCheck" class="w-6 h-6 shrink-0 rounded-md cursor-pointer" style="accent-color:#007AFF;">
+                    <span>Вес кружки (г)</span>
+                </label>
+                <input
+                    type="number"
+                    id="mugInput"
+                    inputmode="decimal"
+                    class="apple-input w-full min-w-0 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl shadow-md text-xl bg-card-light dark:text-white dark:bg-[#38383a] disabled:opacity-40"
+                    step="0.01"
+                    min="0"
+                >
+            </div>
+        </div>
+
+        <button
+            id="copyButton"
+            onclick="handleCopy()"
             class="w-full py-3 bg-primary-apple text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-200 hover:opacity-90 active:scale-[0.99] disabled:opacity-50"
             disabled
         >
@@ -145,7 +171,47 @@
 </div>
 
 <script>
-    // Исходные данные для интерполяции
+    // ==========================================================
+    //                        НАСТРОЙКИ
+    //  Меняйте значения здесь — остальной код трогать не нужно.
+    // ==========================================================
+    const CONFIG = {
+        // --- Кружка ---
+        MUG_ENABLED_DEFAULT: true,   // галочка «вес кружки» по умолчанию (true / false)
+        MUG_WEIGHT_DEFAULT: 85,      // вес кружки по умолчанию, г
+
+        // --- Копирование ---
+        TITLE_UNLOAD: 'Разгрузка',   // название первой строки при копировании
+        TITLE_DRAIN: 'Слива',        // название второй строки при копировании
+        COPY_SEPARATOR: ' — ',       // разделитель между названием и значением
+        EMPTY_MARK: '—',             // что писать, если поле не введено
+        COPY_DECIMALS: 0,            // знаков после запятой в копируемом % (0 = целое)
+        // --- Анимация и обратная связь ---
+        ANIM_MS: 700,                // длительность анимации счётчика, мс
+        COPIED_FEEDBACK_MS: 1200,    // сколько показывать «Скопировано», мс
+        COPIED_TEXT: 'Скопировано',  // текст подтверждения на результате
+        BUTTON_COPIED_TEXT: 'Скопировано!', // текст подтверждения на кнопке
+
+        // --- Запись в Google Таблицу (через Google Forms) при нажатии «Копировать» ---
+        SAVE_ENABLED: true,          // false — отключить запись в таблицу
+        // Ссылка формы: заканчивается на /formResponse (НЕ /viewform)
+        FORM_URL: 'https://docs.google.com/forms/d/e/1FAIpQLSfTs14bEYzcAG_YiVc2c7coDrxIZmglietonxLyiVHVldjvFQ/formResponse',
+        ENTRY_RESULT: 'entry.86313978',   // id вопроса «Результат»
+        ENTRY_SHIFT: 'entry.2131769639',  // id вопроса «Смена»
+
+        // --- Смены ---
+        SHIFT_FORMAT: 'Смена №{n}',  // как выглядит надпись и запись в таблице
+        // Точка отсчёта: начало ДНЕВНОЙ смены (местное время устройства)
+        SHIFT_ANCHOR: '2026-10-03T08:00:00',
+        // Порядок смен по 12 часов: день, ночь, день, ночь ... (дальше по кругу)
+        // Первая в списке работает с SHIFT_ANCHOR (сегодня 08:00–20:00 = 3 смена)
+        SHIFT_CYCLE: [3, 2, 4, 3, 1, 4, 2, 1],
+        SHIFT_LENGTH_HOURS: 12,      // длительность одной смены, часов
+        SHIFT_OVERRIDE: null,        // например 2 — принудительно задать номер смены
+        BADGE_TOP: '1rem'            // отступ плавающей надписи сверху (в Telegram можно '3.5rem')
+    };
+
+    // Исходные данные для интерполяции (без изменений)
     const INTERPOLATION_DATA = [
         { "weight": 1038, "percent": 5 },
         { "weight": 1046, "percent": 6 },
@@ -203,73 +269,85 @@
         { "weight": 2004, "percent": 68 },
         { "weight": 2065, "percent": 70 }
     ];
-
-    // Константы для границ
     const MIN_PERCENT = 5.00;
     const MAX_PERCENT = 70.00;
     const MIN_WEIGHT = INTERPOLATION_DATA[0].weight;
     const MAX_WEIGHT = INTERPOLATION_DATA[INTERPOLATION_DATA.length - 1].weight;
 
-    // Элементы DOM
-    const weightInput = document.getElementById('weightInput');
-    const percentResultDiv = document.getElementById('percentResult');
     const copyButton = document.getElementById('copyButton');
-    
-    // Переменная для хранения последнего рассчитанного значения
-    let lastCalculatedPercent = null;
+    const mugCheck = document.getElementById('mugCheck');
+    const mugInput = document.getElementById('mugInput');
+    const shiftBadge = document.getElementById('shiftBadge');
 
-
-    /**
-     * Плавно анимирует отображение числа от 0 до целевого значения.
-     * @param {number} targetValue - Конечный процент (ТВ).
-     */
-    function animateCount(targetValue) {
-        const duration = 700; // 0.7 секунды для плавной анимации
-        const start = performance.now();
-        const startValue = 0;
-
-        // Обновляем последнее рассчитанное значение
-        lastCalculatedPercent = targetValue; 
-
-        function step(currentTime) {
-            const elapsed = currentTime - start;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            // Вычисляем текущее значение, используя плавную кривую (ease-out)
-            const easedProgress = progress * (2 - progress);
-            const currentValue = startValue + (targetValue - startValue) * easedProgress;
-            
-            // Обновляем дисплей, округляем до двух знаков после запятой
-            percentResultDiv.textContent = `${currentValue.toFixed(2)} %`;
-
-            if (progress < 1) {
-                requestAnimationFrame(step);
-            } else {
-                 // Убеждаемся, что конечное значение точно соответствует целевому
-                 percentResultDiv.textContent = `${targetValue.toFixed(2)} %`;
-
-                 // Применяем цвета в зависимости от границ
-                 if (targetValue === MIN_PERCENT || targetValue === MAX_PERCENT) {
-                     percentResultDiv.classList.add('text-error-apple'); // Красный для границы
-                     percentResultDiv.classList.remove('text-success-apple');
-                 } else {
-                     percentResultDiv.classList.add('text-success-apple'); // Зеленый для нормального значения
-                     percentResultDiv.classList.remove('text-error-apple');
-                 }
-            }
+    // Два поля: Разгрузка и Слива
+    const fields = {
+        unload: {
+            title: CONFIG.TITLE_UNLOAD,
+            input: document.getElementById('input-unload'),
+            result: document.getElementById('result-unload'),
+            box: document.getElementById('box-unload'),
+            net: document.getElementById('net-unload'),
+            value: null, raf: null, timer: null
+        },
+        drain: {
+            title: CONFIG.TITLE_DRAIN,
+            input: document.getElementById('input-drain'),
+            result: document.getElementById('result-drain'),
+            box: document.getElementById('box-drain'),
+            net: document.getElementById('net-drain'),
+            value: null, raf: null, timer: null
         }
-        
-        // Сброс цвета перед началом анимации
-        percentResultDiv.classList.remove('text-error-apple', 'text-success-apple');
+    };
 
-        requestAnimationFrame(step);
+    function fmt(n) { return String(Number(n.toFixed(2))); }
+
+    function roundCopy(v) {
+        const k = Math.pow(10, CONFIG.COPY_DECIMALS);
+        return String(Math.round(v * k) / k);
     }
 
-    /**
-     * Выполняет линейную интерполяцию для нахождения процента по весу.
-     * @param {number} weight - Входное значение веса.
-     * @returns {number} Рассчитанный или ограниченный процент.
-     */
+    /** Вес кружки, который нужно вычесть (0 — не вычитать). */
+    function getMug() {
+        if (!mugCheck.checked) return 0;
+        const m = parseFloat(mugInput.value);
+        return (isNaN(m) || m <= 0) ? 0 : m;
+    }
+
+    function applyColor(field) {
+        const v = field.value;
+        const r = field.result;
+        r.classList.remove('text-error-apple', 'text-success-apple');
+        if (v === MIN_PERCENT || v === MAX_PERCENT) r.classList.add('text-error-apple');
+        else r.classList.add('text-success-apple');
+    }
+
+    function animateCount(field, targetValue) {
+        const start = performance.now();
+        const resultDiv = field.result;
+
+        clearTimeout(field.timer);
+        resultDiv.classList.remove('text-xl');
+        resultDiv.classList.add('text-3xl');
+        field.value = targetValue;
+        if (field.raf) cancelAnimationFrame(field.raf);
+
+        function step(currentTime) {
+            const progress = Math.min((currentTime - start) / CONFIG.ANIM_MS, 1);
+            const easedProgress = progress * (2 - progress);
+            resultDiv.textContent = `${(targetValue * easedProgress).toFixed(2)} %`;
+
+            if (progress < 1) {
+                field.raf = requestAnimationFrame(step);
+            } else {
+                resultDiv.textContent = `${targetValue.toFixed(2)} %`;
+                applyColor(field);
+            }
+        }
+
+        resultDiv.classList.remove('text-error-apple', 'text-success-apple');
+        field.raf = requestAnimationFrame(step);
+    }
+
     function calculatePercent(weight) {
         if (weight < MIN_WEIGHT) return MIN_PERCENT;
         if (weight > MAX_WEIGHT) return MAX_PERCENT;
@@ -278,15 +356,15 @@
         let upper = null;
 
         for (let i = 0; i < INTERPOLATION_DATA.length - 1; i++) {
-            if (weight >= INTERPOLATION_DATA[i].weight && weight <= INTERPOLATION_DATA[i+1].weight) {
+            if (weight >= INTERPOLATION_DATA[i].weight && weight <= INTERPOLATION_DATA[i + 1].weight) {
                 lower = INTERPOLATION_DATA[i];
-                upper = INTERPOLATION_DATA[i+1];
+                upper = INTERPOLATION_DATA[i + 1];
                 break;
             }
         }
-        
+
         if (!lower) {
-            if (weight === MAX_WEIGHT) { lower = upper = INTERPOLATION_DATA[INTERPOLATION_DATA.length - 1]; } 
+            if (weight === MAX_WEIGHT) { lower = upper = INTERPOLATION_DATA[INTERPOLATION_DATA.length - 1]; }
             else if (weight === MIN_WEIGHT) { lower = upper = INTERPOLATION_DATA[0]; }
         }
 
@@ -294,69 +372,97 @@
             if (lower.weight === upper.weight) {
                 return parseFloat(lower.percent.toFixed(2));
             } else {
-                const x1 = lower.weight;
-                const y1 = lower.percent;
-                const x2 = upper.weight;
-                const y2 = upper.percent;
-
+                const x1 = lower.weight, y1 = lower.percent;
+                const x2 = upper.weight, y2 = upper.percent;
                 const interpolatedPercent = y1 + (weight - x1) * ((y2 - y1) / (x2 - x1));
-                
                 return parseFloat(interpolatedPercent.toFixed(2));
             }
-        } 
-
+        }
         return 0;
     }
 
-    /**
-     * Основная функция-обработчик ввода.
-     */
-    function handleInput() {
-        const rawWeight = weightInput.value;
+    function updateCopyButton() {
+        copyButton.disabled = !Object.values(fields).some(f => f.value !== null);
+    }
+
+    /** Показывает «-85=1343» внутри поля ввода (или скрывает). */
+    function showNet(field, mug, net) {
+        if (mug > 0 && net !== null) {
+            field.net.textContent = `-${fmt(mug)}=${fmt(net)}`;
+            field.net.classList.remove('hidden');
+            field.input.style.paddingRight = (field.net.offsetWidth + 20) + 'px';
+        } else {
+            field.net.classList.add('hidden');
+            field.input.style.paddingRight = '';
+        }
+    }
+
+    function clearField(field) {
+        if (field.raf) cancelAnimationFrame(field.raf);
+        clearTimeout(field.timer);
+        field.value = null;
+        field.result.textContent = '— %';
+        field.result.classList.remove('text-error-apple', 'text-xl');
+        field.result.classList.add('text-success-apple', 'text-3xl');
+        showNet(field, 0, null);
+    }
+
+    function handleInput(field) {
+        const rawWeight = field.input.value;
         const weight = parseFloat(rawWeight);
 
-        // Сброс, если ввод пустой или некорректный
         if (rawWeight.trim() === '' || isNaN(weight) || weight <= 0) {
-            percentResultDiv.textContent = '— %';
-            percentResultDiv.classList.remove('text-success-apple', 'text-error-apple');
-            copyButton.disabled = true; // Деактивируем кнопку копирования
+            clearField(field);
+            updateCopyButton();
             return;
         }
 
-        const calculatedPercent = calculatePercent(weight);
-        
-        // Запуск анимированного счетчика
-        animateCount(calculatedPercent);
-        copyButton.disabled = false; // Активируем кнопку копирования
+        const mug = getMug();
+        const net = mug > 0 ? weight - mug : weight;
+
+        if (net <= 0) {
+            clearField(field);
+            updateCopyButton();
+            return;
+        }
+
+        showNet(field, mug, net);
+        animateCount(field, calculatePercent(net));
+        updateCopyButton();
+    }
+
+    function handleAll() {
+        Object.values(fields).forEach(handleInput);
+    }
+
+    /** Копирование текста в буфер (кросс-браузерно, для iframe). */
+    function copyText(text) {
+        const tempInput = document.createElement('textarea');
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); }
+        catch (err) { console.error('Не удалось скопировать текст:', err); }
+        finally { document.body.removeChild(tempInput); }
+        return ok;
     }
 
     /**
-     * Обработчик копирования результата с округлением до ближайшего целого.
+     * Копирование обоих значений:
+     * Разгрузка — 36%
+     * Слива — 9%
+     * Если поле не введено — вместо значения ставится черточка.
      */
     function handleCopy() {
-        if (lastCalculatedPercent === null) {
-            console.error("Нет значения для копирования.");
-            return;
-        }
+        if (!Object.values(fields).some(f => f.value !== null)) return;
 
-        // 1. Округляем до ближайшего целого (42.30 -> 42, 42.78 -> 43)
-        const roundedPercent = Math.round(lastCalculatedPercent);
-        
-        // 2. Форматируем строку для копирования
-        const textToCopy = `${roundedPercent}%`;
+        const text = buildText();
+        sendToSheet(text);
 
-        // 3. Выполняем копирование (используя временное поле для кросс-браузерной совместимости в iframe)
-        const tempInput = document.createElement('textarea');
-        tempInput.value = textToCopy;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        
-        try {
-            document.execCommand('copy');
-            
-            // Визуальное подтверждение
-            const originalText = copyButton.textContent;
-            copyButton.textContent = "Скопировано!";
+        if (copyText(text)) {
+            const originalText = 'Копировать % тв';
+            copyButton.textContent = CONFIG.BUTTON_COPIED_TEXT;
             copyButton.classList.add('bg-success-apple');
             copyButton.classList.remove('bg-primary-apple');
 
@@ -364,20 +470,95 @@
                 copyButton.textContent = originalText;
                 copyButton.classList.remove('bg-success-apple');
                 copyButton.classList.add('bg-primary-apple');
-            }, 1500); // 1.5 секунды
-            
-        } catch (err) {
-            console.error('Не удалось скопировать текст:', err);
-        } finally {
-            document.body.removeChild(tempInput);
+            }, 1500);
         }
     }
 
-    // Инициализация: Добавление слушателя события ввода
-    window.onload = function() {
-        weightInput.addEventListener('input', handleInput);
-    };
+    /** Копирование только одного результата (по нажатию на процент): 39% */
+    function handleCopySingle(field) {
+        if (field.value === null) return;
+        if (!copyText(`${roundCopy(field.value)}%`)) return;
+        if (field.raf) cancelAnimationFrame(field.raf);
+        clearTimeout(field.timer);
 
+        field.result.textContent = CONFIG.COPIED_TEXT;
+        field.result.classList.remove('text-3xl');
+        field.result.classList.add('text-xl');
+
+        field.timer = setTimeout(() => {
+            field.result.classList.remove('text-xl');
+            field.result.classList.add('text-3xl');
+            field.result.textContent = `${field.value.toFixed(2)} %`;
+        }, CONFIG.COPIED_FEEDBACK_MS);
+    }
+
+    /** Текст результата: «Разгрузка — 35%» / «Слива — 9%» (пустое поле — черточка). */
+    function buildText() {
+        return Object.values(fields).map(f => {
+            const val = f.value !== null ? `${roundCopy(f.value)}%` : CONFIG.EMPTY_MARK;
+            return `${f.title}${CONFIG.COPY_SEPARATOR}${val}`;
+        }).join('\n');
+    }
+
+    /** Номер текущей смены по графику (смены по 12 часов, цикл из SHIFT_CYCLE). */
+    function getCurrentShift(now = new Date()) {
+        if (CONFIG.SHIFT_OVERRIDE) return CONFIG.SHIFT_OVERRIDE;
+        const anchor = new Date(CONFIG.SHIFT_ANCHOR).getTime();
+        const len = CONFIG.SHIFT_LENGTH_HOURS * 3600000;
+        const n = Math.floor((now.getTime() - anchor) / len);
+        const c = CONFIG.SHIFT_CYCLE.length;
+        return CONFIG.SHIFT_CYCLE[((n % c) + c) % c];
+    }
+
+    function getShiftText() {
+        return CONFIG.SHIFT_FORMAT.replace('{n}', getCurrentShift());
+    }
+
+    function updateShiftBadge() {
+        shiftBadge.textContent = getShiftText();
+    }
+
+    /** Тихая отправка в Google Таблицу (через Google Forms). Ошибки не показываются. */
+    function sendToSheet(text) {
+        if (!CONFIG.SAVE_ENABLED) return;
+        try {
+            const body = new URLSearchParams();
+            body.append(CONFIG.ENTRY_RESULT, text);
+            body.append(CONFIG.ENTRY_SHIFT, getShiftText());
+            fetch(CONFIG.FORM_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString()
+            }).catch(err => console.error(err));
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    window.onload = function () {
+        // Плавающая надпись со сменой
+        shiftBadge.style.top = `calc(env(safe-area-inset-top, 0px) + ${CONFIG.BADGE_TOP})`;
+        updateShiftBadge();
+        setInterval(updateShiftBadge, 30000);
+
+
+        // Значения кружки по умолчанию из настроек
+        mugCheck.checked = CONFIG.MUG_ENABLED_DEFAULT;
+        mugInput.value = CONFIG.MUG_WEIGHT_DEFAULT;
+        mugInput.disabled = !mugCheck.checked;
+
+        Object.values(fields).forEach(f => {
+            f.input.addEventListener('input', () => handleInput(f));
+            f.box.addEventListener('click', () => handleCopySingle(f));
+        });
+
+        mugCheck.addEventListener('change', () => {
+            mugInput.disabled = !mugCheck.checked;
+            handleAll();
+        });
+        mugInput.addEventListener('input', handleAll);
+    };
 </script>
 
 </body>
